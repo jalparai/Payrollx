@@ -1,0 +1,329 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_EMPLOYEES 100
+#define MAX_NAME_LEN 50
+
+typedef struct {
+    int id;
+    char name[MAX_NAME_LEN];
+    char address[MAX_NAME_LEN];
+    char email[MAX_NAME_LEN];
+    char contact[MAX_NAME_LEN];
+    char account_number[MAX_NAME_LEN];
+    char cnic[MAX_NAME_LEN];
+    char doj[MAX_NAME_LEN];
+    char designation[MAX_NAME_LEN];
+    double salary;
+    double work_hours;
+    double overtime_hours;
+    int unpaid_leaves;
+} Employee;
+
+Employee employees[MAX_EMPLOYEES];
+int employee_count = 0;
+
+char company_name[MAX_NAME_LEN] = "Default Company Name";
+
+void set_company_name() {
+    printf("\n=== Set Company Name ===\n");
+    printf("Enter company name: ");
+    scanf(" %[^\n]", company_name);
+    printf("Company name updated to: %s\n", company_name);
+}
+
+void edit_company_name() {
+    printf("\n=== Edit Company Name ===\n");
+    printf("Current company name: %s\n", company_name);
+    printf("Enter new company name: ");
+    scanf(" %[^\n]", company_name);
+    printf("Company name updated to: %s\n", company_name);
+}
+
+void add_employee() {
+    if (employee_count >= MAX_EMPLOYEES) {
+        printf("\n=== Add Employee ===\n");
+        printf("Employee limit reached.\n");
+        return;
+    }
+
+    Employee *e = &employees[employee_count];
+    e->id = employee_count + 1;
+
+    printf("\n=== Add Employee ===\n");
+
+    printf("Enter name: ");
+    scanf(" %[^\n]%*c", e->name);
+
+    printf("Enter address: ");
+    scanf(" %[^\n]%*c", e->address);
+
+    printf("Enter email: ");
+    scanf(" %[^\n]%*c", e->email);
+
+    printf("Enter contact: ");
+    scanf(" %[^\n]%*c", e->contact);
+
+    printf("Enter account number: ");
+    scanf(" %[^\n]%*c", e->account_number);
+
+    printf("Enter CNIC: ");
+    scanf(" %[^\n]%*c", e->cnic);
+
+    printf("Enter DOJ: ");
+    scanf(" %[^\n]%*c", e->doj);
+
+    printf("Enter designation: ");
+    scanf(" %[^\n]%*c", e->designation);
+
+    printf("Enter salary: ");
+    scanf("%lf", &e->salary);
+
+    e->work_hours = 0;
+    e->overtime_hours = 0;
+    e->unpaid_leaves = 0;
+    employee_count++;
+
+    printf("Employee added successfully.\n");
+}
+
+void edit_employee() {
+    int id;
+    printf("\n=== Edit Employee ===\n");
+    printf("Enter employee ID to edit: ");
+    scanf("%d", &id);
+    if (id <= 0 || id > employee_count) {
+        printf("Invalid employee ID.\n");
+        return;
+    }
+
+    Employee *e = &employees[id - 1];
+    char input[MAX_NAME_LEN];
+
+    printf("Edit name (current: %s): ", e->name);
+    getchar();  // to consume the newline character left by previous scanf
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->name, input);
+    }
+
+    printf("Edit address (current: %s): ", e->address);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->address, input);
+    }
+
+    printf("Edit email (current: %s): ", e->email);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->email, input);
+    }
+
+    printf("Edit contact (current: %s): ", e->contact);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->contact, input);
+    }
+
+    printf("Edit account number (current: %s): ", e->account_number);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->account_number, input);
+    }
+
+    printf("Edit CNIC (current: %s): ", e->cnic);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->cnic, input);
+    }
+
+    printf("Edit DOJ (current: %s): ", e->doj);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->doj, input);
+    }
+
+    printf("Edit designation (current: %s): ", e->designation);
+    fgets(input, sizeof(input), stdin);
+    if (strlen(input) > 1) {
+        input[strcspn(input, "\n")] = '\0';
+        strcpy(e->designation, input);
+    }
+
+    printf("Edit salary (current: %.2lf): ", e->salary);
+    scanf("%lf", &e->salary);
+
+    printf("Employee edited successfully.\n");
+}
+
+void record_work_hours() {
+    int id;
+    double hours, overtime;
+    printf("\n=== Record Work Hours ===\n");
+    printf("Enter employee ID: ");
+    scanf("%d", &id);
+    if (id <= 0 || id > employee_count) {
+        printf("Invalid employee ID.\n");
+        return;
+    }
+
+    printf("Enter regular work hours: ");
+    scanf("%lf", &hours);
+    printf("Enter overtime hours: ");
+    scanf("%lf", &overtime);
+
+    Employee *e = &employees[id - 1];
+    e->work_hours += hours;
+    e->overtime_hours += overtime;
+
+    printf("Work hours recorded successfully.\n");
+}
+
+void record_leave() {
+    int id, unpaid_leaves;
+    printf("\n=== Record Leave ===\n");
+    printf("Enter employee ID: ");
+    scanf("%d", &id);
+    if (id <= 0 || id > employee_count) {
+        printf("Invalid employee ID.\n");
+        return;
+    }
+
+    printf("Enter number of unpaid leave days: ");
+    scanf("%d", &unpaid_leaves);
+
+    Employee *e = &employees[id - 1];
+    e->unpaid_leaves += unpaid_leaves;
+
+    printf("Leave recorded successfully.\n");
+}
+
+void calculate_pay() {
+    int i;
+    printf("\n=== Calculate Pay ===\n");
+    for (i = 0; i < employee_count; i++) {
+        Employee *e = &employees[i];
+        double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
+        double deductions = (e->unpaid_leaves * e->salary / 30);
+        double net_pay = gross_pay - deductions;
+        printf("Employee ID: %d, Gross Pay: %.2lf, Deductions: %.2lf, Net Pay: %.2lf\n",
+               e->id, gross_pay, deductions, net_pay);
+    }
+}
+
+void transfer_pay() {
+    int i;
+    printf("\n=== Transfer Pay ===\n");
+    printf("Initiating pay transfer...\n");
+    for (i = 0; i < employee_count; i++) {
+        Employee *e = &employees[i];
+        double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
+        double deductions = (e->unpaid_leaves * e->salary / 30);
+        double net_pay = gross_pay - deductions;
+        printf("Transferring %.2lf to account %s for employee %d\n", net_pay, e->account_number, e->id);
+    }
+    printf("Pay transfer completed.\n");
+}
+
+void salary_slip() {
+    int i;
+    printf("\n=== Generate Salary Slips ===\n");
+    for (i = 0; i < employee_count; i++) {
+        Employee *e = &employees[i];
+        double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
+        double deductions = (e->unpaid_leaves * e->salary / 30);
+        double net_pay = gross_pay - deductions;
+        
+        printf("\n================================\n");
+        printf("Salary Slip for Employee ID: %d\n", e->id);
+        printf("================================\n");
+        printf("Name: %s\n", e->name);
+        printf("Designation: %s\n", e->designation);
+        printf("Basic Salary: %.2lf\n", e->salary);
+        printf("Overtime Hours: %.2lf\n", e->overtime_hours);
+        printf("Gross Pay: %.2lf\n", gross_pay);
+        printf("Deductions: %.2lf\n", deductions);
+        printf("Net Pay: %.2lf\n", net_pay);
+        printf("================================\n");
+    }
+}
+
+void display_employee_list() {
+    int i;
+    printf("\n=== Display Employee List ===\n");
+    printf("Company: %s\n", company_name);
+    printf("Employee List:\n");
+    printf("%-5s %-15s %-20s %-20s %-15s %-15s %-15s %-15s %-15s %-10s\n", 
+           "ID", "Name", "Address", "Email", "Contact", "Account", "CNIC", "DOJ", "Designation", "Salary");
+    for (i = 0; i < employee_count; i++) {
+        Employee *e = &employees[i];
+        printf("%-5d %-15s %-20s %-20s %-15s %-15s %-15s %-15s %-15s %-10.2lf\n",
+               e->id, e->name, e->address, e->email, e->contact, e->account_number, e->cnic, e->doj, e->designation, e->salary);
+    }
+}
+
+int main() {
+    int choice;
+
+    set_company_name();
+
+    while (1) {
+        printf("\nCompany: %s\n", company_name);
+        printf("1. Add Employee\n");
+        printf("2. Edit Employee\n");
+        printf("3. Edit Company Name\n");
+        printf("4. Record Work Hours\n");
+        printf("5. Record Leave\n");
+        printf("6. Calculate Pay\n");
+        printf("7. Transfer Pay\n");
+        printf("8. Generate Salary Slips\n");
+        printf("9. Display Employee List\n");
+        printf("10. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                add_employee();
+                break;
+            case 2:
+                edit_employee();
+                break;
+            case 3:
+                edit_company_name();
+                break;
+            case 4:
+                record_work_hours();
+                break;
+            case 5:
+                record_leave();
+                break;
+            case 6:
+                calculate_pay();
+                break;
+            case 7:
+                transfer_pay();
+                break;
+            case 8:
+                salary_slip();
+                break;
+            case 9:
+                display_employee_list();
+                break;
+            case 10:
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
