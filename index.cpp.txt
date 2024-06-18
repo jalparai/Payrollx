@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_EMPLOYEES 100
 #define MAX_NAME_LEN 50
@@ -26,24 +27,120 @@ int employee_count = 0;
 
 char company_name[MAX_NAME_LEN] = "Default Company Name";
 
+void print_line() {
+    printf("========================================================\n");
+}
+
 void set_company_name() {
-    printf("\n=== Set Company Name ===\n");
+    print_line();
+    printf("                  Set Company Name                     \n");
+    print_line();
     printf("Enter company name: ");
     scanf(" %[^\n]", company_name);
     printf("Company name updated to: %s\n", company_name);
+    print_line();
 }
 
 void edit_company_name() {
-    printf("\n=== Edit Company Name ===\n");
+    print_line();
+    printf("                  Edit Company Name                    \n");
+    print_line();
     printf("Current company name: %s\n", company_name);
     printf("Enter new company name: ");
     scanf(" %[^\n]", company_name);
     printf("Company name updated to: %s\n", company_name);
+    print_line();
+}
+
+int is_valid_name(const char *name) {
+    int i;
+    for (i = 0; i < strlen(name); i++) {
+        if (!isalpha(name[i]) && name[i] != ' ') {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int is_valid_email(const char *email) {
+    const char *at = strchr(email, '@');
+    if (at && strchr(at, '.')) {
+        return 1;
+    }
+    return 0;
+}
+
+int is_valid_contact(const char *contact) {
+    int i;
+    for (i = 0; i < strlen(contact); i++) {
+        if (!isdigit(contact[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int is_valid_cnic(const char *cnic) {
+    int len = strlen(cnic);
+    if (len == 13 || (len == 15 && cnic[5] == '-' && cnic[13] == '-')) {
+        return 1;
+    }
+    return 0;
+}
+
+void input_name(char *name) {
+    while (1) {
+        printf("Enter name: ");
+        scanf(" %[^\n]%*c", name);
+        if (is_valid_name(name)) {
+            break;
+        } else {
+            printf("Invalid name. Only alphabetic characters and spaces are allowed. Please try again.\n");
+        }
+    }
+}
+
+void input_email(char *email) {
+    while (1) {
+        printf("Enter email: ");
+        scanf(" %[^\n]%*c", email);
+        if (is_valid_email(email)) {
+            break;
+        } else {
+            printf("Invalid email format. Please try again.\n");
+        }
+    }
+}
+
+void input_contact(char *contact) {
+    while (1) {
+        printf("Enter contact: ");
+        scanf(" %[^\n]%*c", contact);
+        if (is_valid_contact(contact)) {
+            break;
+        } else {
+            printf("Invalid contact. Only numeric characters are allowed. Please try again.\n");
+        }
+    }
+}
+
+void input_cnic(char *cnic) {
+    while (1) {
+        printf("Enter CNIC: ");
+        scanf(" %[^\n]%*c", cnic);
+        if (is_valid_cnic(cnic)) {
+            break;
+        } else {
+            printf("Invalid CNIC format. Please enter 13 digits or in the format XXXXX-XXXXXXX-X. Please try again.\n");
+        }
+    }
 }
 
 void add_employee() {
     if (employee_count >= MAX_EMPLOYEES) {
-        printf("\n=== Add Employee ===\n");
+        print_line();
+        printf("                  Add Employee                         \n");
+        print_line();
         printf("Employee limit reached.\n");
         return;
     }
@@ -51,25 +148,23 @@ void add_employee() {
     Employee *e = &employees[employee_count];
     e->id = employee_count + 1;
 
-    printf("\n=== Add Employee ===\n");
+    print_line();
+    printf("                  Add Employee                         \n");
+    print_line();
 
-    printf("Enter name: ");
-    scanf(" %[^\n]%*c", e->name);
+    input_name(e->name);
 
     printf("Enter address: ");
     scanf(" %[^\n]%*c", e->address);
 
-    printf("Enter email: ");
-    scanf(" %[^\n]%*c", e->email);
+    input_email(e->email);
 
-    printf("Enter contact: ");
-    scanf(" %[^\n]%*c", e->contact);
+    input_contact(e->contact);
 
     printf("Enter account number: ");
     scanf(" %[^\n]%*c", e->account_number);
 
-    printf("Enter CNIC: ");
-    scanf(" %[^\n]%*c", e->cnic);
+    input_cnic(e->cnic);
 
     printf("Enter DOJ: ");
     scanf(" %[^\n]%*c", e->doj);
@@ -86,11 +181,14 @@ void add_employee() {
     employee_count++;
 
     printf("Employee added successfully.\n");
+    print_line();
 }
 
 void edit_employee() {
     int id;
-    printf("\n=== Edit Employee ===\n");
+    print_line();
+    printf("                  Edit Employee                        \n");
+    print_line();
     printf("Enter employee ID to edit: ");
     scanf("%d", &id);
     if (id <= 0 || id > employee_count) {
@@ -102,14 +200,13 @@ void edit_employee() {
     char input[MAX_NAME_LEN];
 
     printf("Edit name (current: %s): ", e->name);
-    getchar();  // to consume the newline character left by previous scanf
-    fgets(input, sizeof(input), stdin);
+    input_name(input);
     if (strlen(input) > 1) {
-        input[strcspn(input, "\n")] = '\0';
         strcpy(e->name, input);
     }
 
     printf("Edit address (current: %s): ", e->address);
+    getchar();  // to consume the newline character left by previous scanf
     fgets(input, sizeof(input), stdin);
     if (strlen(input) > 1) {
         input[strcspn(input, "\n")] = '\0';
@@ -117,16 +214,14 @@ void edit_employee() {
     }
 
     printf("Edit email (current: %s): ", e->email);
-    fgets(input, sizeof(input), stdin);
+    input_email(input);
     if (strlen(input) > 1) {
-        input[strcspn(input, "\n")] = '\0';
         strcpy(e->email, input);
     }
 
     printf("Edit contact (current: %s): ", e->contact);
-    fgets(input, sizeof(input), stdin);
+    input_contact(input);
     if (strlen(input) > 1) {
-        input[strcspn(input, "\n")] = '\0';
         strcpy(e->contact, input);
     }
 
@@ -138,9 +233,8 @@ void edit_employee() {
     }
 
     printf("Edit CNIC (current: %s): ", e->cnic);
-    fgets(input, sizeof(input), stdin);
+    input_cnic(input);
     if (strlen(input) > 1) {
-        input[strcspn(input, "\n")] = '\0';
         strcpy(e->cnic, input);
     }
 
@@ -162,12 +256,15 @@ void edit_employee() {
     scanf("%lf", &e->salary);
 
     printf("Employee edited successfully.\n");
+    print_line();
 }
 
 void record_work_hours() {
     int id;
     double hours, overtime;
-    printf("\n=== Record Work Hours ===\n");
+    print_line();
+    printf("                  Record Work Hours                    \n");
+    print_line();
     printf("Enter employee ID: ");
     scanf("%d", &id);
     if (id <= 0 || id > employee_count) {
@@ -185,11 +282,14 @@ void record_work_hours() {
     e->overtime_hours += overtime;
 
     printf("Work hours recorded successfully.\n");
+    print_line();
 }
 
 void record_leave() {
     int id, unpaid_leaves;
-    printf("\n=== Record Leave ===\n");
+    print_line();
+    printf("                  Record Leave                         \n");
+    print_line();
     printf("Enter employee ID: ");
     scanf("%d", &id);
     if (id <= 0 || id > employee_count) {
@@ -204,25 +304,29 @@ void record_leave() {
     e->unpaid_leaves += unpaid_leaves;
 
     printf("Leave recorded successfully.\n");
+    print_line();
 }
 
 void calculate_pay() {
     int i;
-    printf("\n=== Calculate Pay ===\n");
+    print_line();
+    printf("                  Calculate Pay                        \n");
+    print_line();
     for (i = 0; i < employee_count; i++) {
         Employee *e = &employees[i];
         double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
         double deductions = (e->unpaid_leaves * e->salary / 30);
         double net_pay = gross_pay - deductions;
-        printf("Employee ID: %d, Gross Pay: %.2lf, Deductions: %.2lf, Net Pay: %.2lf\n",
-               e->id, gross_pay, deductions, net_pay);
+        printf("Employee ID: %d, Net Pay: %.2lf\n", e->id, net_pay);
     }
+    print_line();
 }
 
 void transfer_pay() {
     int i;
-    printf("\n=== Transfer Pay ===\n");
-    printf("Initiating pay transfer...\n");
+    print_line();
+    printf("                  Transfer Pay                         \n");
+    print_line();
     for (i = 0; i < employee_count; i++) {
         Employee *e = &employees[i];
         double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
@@ -231,17 +335,20 @@ void transfer_pay() {
         printf("Transferring %.2lf to account %s for employee %d\n", net_pay, e->account_number, e->id);
     }
     printf("Pay transfer completed.\n");
+    print_line();
 }
 
 void salary_slip() {
     int i;
-    printf("\n=== Generate Salary Slips ===\n");
+    print_line();
+    printf("                  Generate Salary Slips                \n");
+    print_line();
     for (i = 0; i < employee_count; i++) {
         Employee *e = &employees[i];
         double gross_pay = e->salary + (e->overtime_hours * e->salary / 160);
         double deductions = (e->unpaid_leaves * e->salary / 30);
         double net_pay = gross_pay - deductions;
-        
+
         printf("\n================================\n");
         printf("Salary Slip for Employee ID: %d\n", e->id);
         printf("================================\n");
@@ -254,11 +361,14 @@ void salary_slip() {
         printf("Net Pay: %.2lf\n", net_pay);
         printf("================================\n");
     }
+    print_line();
 }
 
 void display_employee_list() {
     int i;
-    printf("\n=== Display Employee List ===\n");
+    print_line();
+    printf("                  Display Employee List                \n");
+    print_line();
     printf("Company: %s\n", company_name);
     printf("Employee List:\n");
     printf("%-5s %-15s %-20s %-20s %-15s %-15s %-15s %-15s %-15s %-10s\n", 
@@ -268,6 +378,7 @@ void display_employee_list() {
         printf("%-5d %-15s %-20s %-20s %-15s %-15s %-15s %-15s %-15s %-10.2lf\n",
                e->id, e->name, e->address, e->email, e->contact, e->account_number, e->cnic, e->doj, e->designation, e->salary);
     }
+    print_line();
 }
 
 int main() {
@@ -325,5 +436,5 @@ int main() {
         }
     }
 
-    return 0;
+    return 0;
 }
