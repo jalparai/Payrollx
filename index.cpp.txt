@@ -423,6 +423,7 @@ int main() {
             case 7:
                 transfer_pay();
                 break;
+                
             case 8:
                 salary_slip();
                 break;
